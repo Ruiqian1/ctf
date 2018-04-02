@@ -228,10 +228,10 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
     World w(cm);
 
     // Turn off all models
-    // CTF_int::active_switch_all_models(-1, 1.0);
 
     train_world(dtime, w);
     CTF_int::update_all_models(w.cdt.cm);
+    CTF_int::active_switch_all_models(1000, 0.15);
     train_world(dtime, w);
     CTF_int::update_all_models(w.cdt.cm);
   }

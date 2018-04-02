@@ -340,6 +340,89 @@ namespace CTF_int {
 
     new_C = C;
 
+    // Check if this function should be executed
+
+    bool sr = true;
+
+    // Generate tps
+    double nnz_frac_A = 1.0, nnz_frac_B = 1.0, nnz_frac_C = 1.0;
+    if (is_sparse_A){
+      nnz_frac_A = size_blk_A[0]/sr_A->pair_size();
+      for (int i=0; i<order_A; i++){
+        nnz_frac_A = nnz_frac_A / edge_len_A[i];
+      }
+    }
+    if (is_sparse_B){
+      nnz_frac_B = size_blk_B[0]/sr_B->pair_size();
+      for (int i=0; i<order_B; i++){
+        nnz_frac_B = nnz_frac_B / edge_len_B[i];
+      }
+    }
+    if (krnl_type > 0){
+      if (is_sparse_A) nnz_frac_A = nnz_frac_A / (inner_params.m*inner_params.k);
+      if (is_sparse_B) nnz_frac_B = nnz_frac_B / (inner_params.k*inner_params.n);
+      if (is_sparse_C) nnz_frac_C = std::min(1.0,nnz_frac_A*nnz_frac_B*inner_params.k / (inner_params.k*inner_params.n));
+
+    }
+    double tps_[] = {0.0, 1.0, (double)est_membw(nnz_frac_A, nnz_frac_B, nnz_frac_C), est_fp(nnz_frac_B, nnz_frac_B, nnz_frac_C)};
+
+   switch (krnl_type){
+      case 0:
+        if (is_custom){
+          sr = seq_tsr_spctr_cst_k0.should_observe(tps_);
+        } else {
+          sr = seq_tsr_spctr_k0.should_observe(tps_);
+        }
+        break;
+      case 1:
+        if (is_custom){
+          if (inner_params.offload)
+            sr = seq_tsr_spctr_cst_off_k1.should_observe(tps_);
+          else
+            sr = seq_tsr_spctr_cst_k1.should_observe(tps_);
+        } else {
+          if (inner_params.offload)
+            sr = seq_tsr_spctr_off_k1.should_observe(tps_);
+          else
+            sr = seq_tsr_spctr_k1.should_observe(tps_);
+        }
+        break;
+      case 2:
+        if (is_custom){
+          if (inner_params.offload)
+            sr = seq_tsr_spctr_cst_off_k2.should_observe(tps_);
+          else
+            sr = seq_tsr_spctr_cst_k2.should_observe(tps_);
+        } else {
+          if (inner_params.offload)
+            sr = seq_tsr_spctr_off_k2.should_observe(tps_);
+          else
+            sr = seq_tsr_spctr_k2.should_observe(tps_);
+        }
+        break;
+      case 3:
+        if (is_custom){
+          sr = seq_tsr_spctr_cst_k3.should_observe(tps_);
+        } else {
+          sr = seq_tsr_spctr_k3.should_observe(tps_);
+        }
+        break;
+      case 4:
+        if (is_custom){
+           // to-be-complete
+           // should always observe
+          //seq_tsr_spctr_cst_k4.observe(tps);
+          sr = true;
+        } else {
+          sr = seq_tsr_spctr_k4.should_observe(tps_);
+        }
+        break;
+    }
+
+    if(!sr){
+      return;
+   }
+
     switch (krnl_type){
       case 0:
       {
@@ -416,7 +499,9 @@ namespace CTF_int {
       }
       break;
     }
-    double nnz_frac_A = 1.0, nnz_frac_B = 1.0, nnz_frac_C = 1.0;
+    nnz_frac_A = 1.0;
+    nnz_frac_B = 1.0;
+    nnz_frac_C = 1.0;
     if (is_sparse_A){
       nnz_frac_A = size_blk_A[0]/sr_A->pair_size();
       for (int i=0; i<order_A; i++){

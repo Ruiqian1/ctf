@@ -458,8 +458,6 @@ namespace CTF_int {
                        algstrct const *     sr,
                        CommData             glb_comm){
 
-    // should-turn-off??
-
     int i, idx_lyr_new, idx_lyr_old, rem_idx, prc_idx, loc_idx;
     int num_old_virt, num_new_virt;
     int * idx, * old_loc_lda, * new_loc_lda, * phase_lda;
@@ -467,6 +465,15 @@ namespace CTF_int {
     MPI_Request * reqs;
     int * phase = old_dist.phase;
     int order = old_dist.order;
+
+
+    double * tps = (double*)malloc(3*sizeof(double));
+    tps[0] = 0;
+    tps[1] = (double)num_old_virt+num_new_virt;
+    tps[2] = (double)std::max(new_dist.size, new_dist.size);
+
+    if (!(blres_mdl.should_observe(tps))) return;
+
 
     if (order == 0){
       alloc_ptr(sr->el_size*new_dist.size, (void**)&tsr_cyclic_data);
@@ -589,7 +596,7 @@ namespace CTF_int {
 #ifdef TUNE
     MPI_Barrier(glb_comm.cm);
     double exe_time = MPI_Wtime()-st_time;
-    double * tps = (double*)malloc(3*sizeof(double));
+    tps = (double*)malloc(3*sizeof(double));
     tps[0] = exe_time;
     tps[1] = (double)num_old_virt+num_new_virt;
     tps[2] = (double)std::max(new_dist.size, new_dist.size);

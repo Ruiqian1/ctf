@@ -2036,12 +2036,6 @@ namespace CTF_int {
                            int const *  new_offsets,
                            int * const * new_permutation){
 
-   // change-of-observe
-   // not-quite-sure
-   if (!spredist_mdl.should_observe(NULL)){
-      return SUCCESS;
-   }
-
     int can_block_shuffle;
     char * shuffled_data;
   #if VERIFY_REMAP
@@ -2113,6 +2107,12 @@ namespace CTF_int {
     } else {
       if (is_sparse){
         //padded_reshuffle(sym, old_dist, new_dist, this->data, &shuffled_data, sr, wrld->cdt);
+
+        // change-of-observe
+        double nnz_frac_ = ((double)nnz_tot)/(old_dist.size*wrld->cdt.np);
+        double tps_[] = {0.0, 1.0, (double)log2(wrld->cdt.np),  (double)std::max(old_dist.size, new_dist.size)*log2(wrld->cdt.np)*sr->el_size*nnz_frac_};
+        if (!spredist_mdl.should_observe(tps_)) return SUCCESS;
+
         double st_time = MPI_Wtime();
         char * old_data = this->data;
 

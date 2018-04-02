@@ -142,6 +142,7 @@ namespace CTF_int{
   }
 
   void offload_arr::upload(char const * host_spr){
+     // not-quite-sure
     TAU_FSTART(cuda_upload);
     double st_time = MPI_Wtime();
     cudaError_t err = cudaMemcpy(dev_spr, host_spr, nbytes,

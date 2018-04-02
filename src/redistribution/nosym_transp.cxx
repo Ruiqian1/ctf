@@ -320,17 +320,28 @@ namespace CTF_int {
 
 
    // change-of-observe
+   // not-quite-sure
+   int64_t contig0_ = 1;
+   for (int i=0; i<order; i++){
+     if (new_order[i] == i) contig0_ *= edge_len[i];
+     else break;
+   }
+
    int64_t tot_sz_ = 1;
    for (int i=0; i<order; i++){
      tot_sz_ *= edge_len[i];
    }
 
    double tps_[] = {0.0, 1.0, (double)tot_sz_};
-   if (!(non_contig_transp_mdl.should_observe(tps_)
-      || shrt_contig_transp_mdl.should_observe(tps_)
-      || long_contig_transp_mdl.should_observe(tps_))){
-         return;
+   bool should_run = true;
+   if (contig0_ < 4){
+     should_run = non_contig_transp_mdl.should_observe(tps_);
+  } else if (contig0_ <= 64){
+     should_run = shrt_contig_transp_mdl.should_observe(tps_);
+   } else {
+     should_run = long_contig_transp_mdl.should_observe(tps_);
    }
+   if(!should_run) return;
 
     int64_t * chunk_size;
     char ** tswap_data;
@@ -392,6 +403,8 @@ namespace CTF_int {
 
     CTF_int::cdealloc(tswap_data);
     CTF_int::cdealloc(chunk_size);
+
+    // not-quite-sure
     int64_t contig0 = 1;
     for (int i=0; i<order; i++){
       if (new_order[i] == i) contig0 *= edge_len[i];
