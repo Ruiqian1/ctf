@@ -494,27 +494,27 @@ namespace CTF_int {
     if (is_custom && !is_inner){
       double st_time = MPI_Wtime();
       ASSERT(is_inner == 0);
-      sym_seq_ctr_cust(this->alpha,
-                       A,
-                       sr_A,
-                       order_A,
-                       edge_len_A,
-                       sym_A,
-                       idx_map_A,
-                       B,
-                       sr_B,
-                       order_B,
-                       edge_len_B,
-                       sym_B,
-                       idx_map_B,
-                       this->beta,
-                       C,
-                       sr_C,
-                       order_C,
-                       edge_len_C,
-                       sym_C,
-                       idx_map_C,
-                       func);
+      // sym_seq_ctr_cust(this->alpha,
+      //                  A,
+      //                  sr_A,
+      //                  order_A,
+      //                  edge_len_A,
+      //                  sym_A,
+      //                  idx_map_A,
+      //                  B,
+      //                  sr_B,
+      //                  order_B,
+      //                  edge_len_B,
+      //                  sym_B,
+      //                  idx_map_B,
+      //                  this->beta,
+      //                  C,
+      //                  sr_C,
+      //                  order_C,
+      //                  edge_len_C,
+      //                  sym_C,
+      //                  idx_map_C,
+      //                  func);
       double exe_time = MPI_Wtime()-st_time;
       double tps[] = {exe_time, 1.0, (double)est_membw(), est_fp()};
       seq_tsr_ctr_mdl_cst.observe(tps);
