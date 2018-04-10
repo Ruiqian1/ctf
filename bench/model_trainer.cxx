@@ -178,6 +178,9 @@ void train_world(double dtime, World & dw, double step_size){
     int64_t m = m0;
     double ctime = 0.0;
     do {
+
+      if (rnk == 0) printf("executing p = %d n= %ld m = %ld\n", dw.np, n, m);
+
       train_dns_vec_mat(n, m, dw);
       train_sps_vec_mat(n-2, m, dw, 0, 0, 0);
       train_sps_vec_mat(n+1, m-2, dw, 1, 0, 0);
