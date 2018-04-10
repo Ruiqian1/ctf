@@ -233,7 +233,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
 
     for (int i=0; i<5; i++){
       double step_size = 1.0 + 3.0 / pow(2.0, (double)i);
-       std::cout<<"step size: "<<step_size<<std::endl;
+       // std::cout<<"step size: "<<step_size<<std::endl;
       train_world(dtime, w, step_size);
       CTF_int::update_all_models(w.cdt.cm);
       CTF_int::active_switch_all_models(1000, 0.15);
