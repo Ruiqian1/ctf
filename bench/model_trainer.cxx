@@ -179,7 +179,8 @@ void train_world(double dtime, World & dw, double step_size){
     double ctime = 0.0;
     do {
 
-      if (rnk == 0) printf("executing p = %d n= %ld m = %ld\n", dw.np, n, m);
+      // if (rnk == 0)
+      printf("rank = %ld executing p = %d n= %ld m = %ld ", rnk, dw.np, n, m);
 
       train_dns_vec_mat(n, m, dw);
       train_sps_vec_mat(n-2, m, dw, 0, 0, 0);
@@ -199,7 +200,8 @@ void train_world(double dtime, World & dw, double step_size){
       ctime = MPI_Wtime() - t_st;
       MPI_Allreduce(MPI_IN_PLACE, &ctime, 1, MPI_DOUBLE, MPI_MAX, dw.comm);
 
-      if (rnk == 0) printf("ctime = %lf ddtime = %lf\n", ctime, ddtime);
+      // if (rnk == 0)
+      printf("rank = %ld ctime = %lf ddtime = %lf\n", rnk, ctime, ddtime);
 
     } while (ctime < ddtime && m<= 1000000);
 
