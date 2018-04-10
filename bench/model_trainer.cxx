@@ -199,7 +199,7 @@ void train_world(double dtime, World & dw, double step_size){
       ctime = MPI_Wtime() - t_st;
       MPI_Allreduce(MPI_IN_PLACE, &ctime, 1, MPI_DOUBLE, MPI_MAX, dw.comm);
 
-      if (rnk == 0) printf("executing p = %d n= %ld m = %ld ctime = %lf ddtime = %lf\n", dw.np, n, m, ctime, ddtime);
+      if (rnk == 0) printf("ctime = %lf ddtime = %lf\n", ctime, ddtime);
 
     } while (ctime < ddtime && m<= 1000000);
 
