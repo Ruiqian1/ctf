@@ -176,7 +176,7 @@ void train_world(double dtime, World & dw, double step_size){
     double t_st = MPI_Wtime();
     int niter = 0;
     int64_t m = m0;
-    double ctime = 0.0;
+    volatile double ctime = 0.0;
     do {
 
       // if (rnk == 0)
