@@ -519,9 +519,9 @@ namespace CTF_int {
     std::cout<<"over time: "<<over_time_total<<std::endl;
     std::cout<<"under time: "<<under_time_total<<std::endl;
 
-    bool under_time_ratio = under_time_total/tot_time_total;
-    bool over_time_ratio = over_time_total/tot_time_total;
-    if (tot_nrcol >= 1000 && over_time_ratio < 0.15 && under_time_ratio < 0.15){
+    double under_time_ratio = under_time_total/tot_time_total;
+    double over_time_ratio = over_time_total/tot_time_total;
+    if (tot_nrcol >= 1000 && over_time_ratio < 0.20 && under_time_ratio < 0.20){
       is_active = false;
       std::cout<<"Model "<<name<<" has been turned off"<<std::endl;
    }
