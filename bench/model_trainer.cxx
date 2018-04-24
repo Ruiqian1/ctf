@@ -247,7 +247,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
       CTF_int::update_all_models(w.cdt.cm);
 
       // TODO what should be the threshold
-      CTF_int::active_switch_all_models(1000, 0.15);
+      // CTF_int::active_switch_all_models(1000, 0.15);
       }
   }
    if(write_coeff)
