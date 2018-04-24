@@ -515,9 +515,9 @@ namespace CTF_int {
     MPI_Allreduce(&tot_time, &tot_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
     MPI_Allreduce(&over_time, &over_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
     MPI_Allreduce(&under_time, &under_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
-    std::cout<<"total time: "<<tot_time_total<<std::endl;
-    std::cout<<"over time: "<<over_time_total<<std::endl;
-    std::cout<<"under time: "<<under_time_total<<std::endl;
+    // std::cout<<"total time: "<<tot_time_total<<std::endl;
+    // std::cout<<"over time: "<<over_time_total<<std::endl;
+    // std::cout<<"under time: "<<under_time_total<<std::endl;
 
     double under_time_ratio = under_time_total/tot_time_total;
     double over_time_ratio = over_time_total/tot_time_total;
