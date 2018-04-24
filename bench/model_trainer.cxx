@@ -198,7 +198,7 @@ void train_world(double dtime, World & dw, double step_size){
       m *= step_size;
       n += 2;
       ctime = MPI_Wtime() - t_st;
-      MPI_Allreduce(MPI_IN_PLACE, &ctime, 1, MPI_DOUBLE, MPI_MAX, dw.comm);
+      MPI_Allreduce(MPI_IN_PLACE, (void*)&ctime, 1, MPI_DOUBLE, MPI_MAX, dw.comm);
 
       // if (rnk == 0)
       printf("rank = %ld ctime = %lf ddtime = %lf\n", rnk, ctime, ddtime);
