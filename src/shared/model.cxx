@@ -548,7 +548,7 @@ namespace CTF_int {
 
   template <int nparam>
   void LinModel<nparam>::print_uo(){
-    printf("%s is_tuned = %d (%ld) tot_time = %lf over_time = %lf under_time = %lf\n",name,is_tuned,nobs,tot_time,over_time,under_time);
+    printf("%s is_tuned = %d (%lld) tot_time = %lf over_time = %lf under_time = %lf\n",name,is_tuned,nobs,tot_time,over_time,under_time);
   }
 
 
@@ -643,7 +643,7 @@ namespace CTF_int {
         found_line = true;
 
         // Get the nparam coeffs
-        double coeff_from_file [nparam];
+        // double coeff_from_file [nparam];
         for(int i=0; i<nparam; i++){
           if(!std::getline(f,s,' ')){
             right_num_coeff = false;
