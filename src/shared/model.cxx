@@ -697,6 +697,8 @@ namespace CTF_int {
       std::string model_name = std::string(name);
       FILE * data_file = fopen((path + "/" + model_name).c_str(), "a");
       int data_file_fd = fileno(data_file);
+      fclose(data_file);
+      return;
       // std::ofstream ofs;
       // ofs.open(path+"/"+model_name, std::ofstream::out | std::ofstream::app);
 
