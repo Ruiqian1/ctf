@@ -685,8 +685,8 @@ namespace CTF_int {
   std::string doubleToText(const double & d)
   {
       std::stringstream ss;
-      //ss << std::setprecision( std::numeric_limits<double>::digits10+2);
-      ss << std::setprecision( std::numeric_limits<int>::max() );
+      ss << std::setprecision( std::numeric_limits<double>::digits10+2);
+      // ss << std::setprecision( std::numeric_limits<int>::max() );
       ss << d;
       return ss.str();
   }
