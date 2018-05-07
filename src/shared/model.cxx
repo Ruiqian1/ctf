@@ -683,7 +683,7 @@ namespace CTF_int {
   void LinModel<nparam>::dump_data(std::string path){
       // Open the file
       std::string model_name = std::string(name);
-      FILE * data_file = fopen(name, "a");
+      FILE * data_file = fopen(path + model_name, "a");
       int data_file_fd = fileno(data_file);
       // std::ofstream ofs;
       // ofs.open(path+"/"+model_name, std::ofstream::out | std::ofstream::app);
