@@ -683,24 +683,41 @@ namespace CTF_int {
   void LinModel<nparam>::dump_data(std::string path){
       // Open the file
       std::string model_name = std::string(name);
-      std::ofstream ofs;
-      ofs.open(path+"/"+model_name, std::ofstream::out | std::ofstream::trunc);
+      FILE * data_file = fopen(name, "a");
+      int data_file_fd = fileno(data_file);
+      // std::ofstream ofs;
+      // ofs.open(path+"/"+model_name, std::ofstream::out | std::ofstream::app);
 
       // Dump the model coeffs
+      std::string coeff = "";
       for(int i=0; i<nparam; i++){
-        ofs<<coeff_guess[i]<<" ";
+        // ofs<<coeff_guess[i]<<" ";
+        coeff += std::to_string(coeff_guess[i]);
+        coeff += std::string(" ");
       }
-      ofs<<"\n";
+      // Strip off the last space
+      coeff = coeff.substr(0, coeff.size()-1);
+      coeff += std::string("\n");
+      // Write coefficient to the file
+      write(data_file_fd, coeff.c_str(), coeff.size());
+      // ofs<<"\n";
 
       // Dump the training data
       int num_records = std::min(nobs, (int64_t)hist_size);
       for(int i=0; i<num_records; i++){
+         std::string instance = "";
         for(int j=0; j<mat_lda; j++){
-          ofs<<time_param_mat[i*mat_lda+j]<<" ";
+          // ofs<<time_param_mat[i*mat_lda+j]<<" ";
+          instance += std::to_string(time_param_mat[i*mat_lda+j]);
+          instance += std::string(" ");
         }
-        ofs<<"\n";
+        instance = instance.substr(0, instance.length()-1);
+        instance += std::string("\n");
+        write(data_file_fd, instance.c_str(), instance.size());
+        // ofs<<"\n";
       }
-      ofs.close();
+      // ofs.close();
+      fclose(data_file);
   }
 
 
