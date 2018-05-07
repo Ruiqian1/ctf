@@ -36,7 +36,9 @@ if __name__ == "__main__":
     file_name = sys.argv[1]
     model_coeff, instance = load_data(file_name)
     actual, estimates = get_plot_data(model_coeff, instance)
+    plt.figure(figsize=(10,8))
     plt.subplot(2, 1, 1)
+    plt.title("actual vs. estimated")
     plt.plot(actual, 'b.', label='Actual')
     plt.plot(estimates, 'r.', label='Estimate')
     plt.legend(bbox_to_anchor=(0.75, 1), loc=2, borderaxespad=0.)
@@ -52,6 +54,7 @@ if __name__ == "__main__":
         else:
             total_under_time -= diff
     plt.subplot(2, 1, 2)
+    plt.title("estimated minus actual")
     plt.plot(difference)
     plt.show()
     print("Total under time %f"%total_under_time)

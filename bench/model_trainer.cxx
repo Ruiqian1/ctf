@@ -236,7 +236,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
 
     for (int i=0; i<5; i++){
       // TODO probably change it to 1.2 ^ x
-      double step_size = 1.0 + 2.0 / pow(2.0, (double)i);
+      double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
        // std::cout<<"step size: "<<step_size<<std::endl;
       train_world(dtime/5, w, step_size);
       CTF_int::update_all_models(MPI_COMM_WORLD);
@@ -248,6 +248,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
    if(write_coeff)
       CTF_int::write_all_models(coeff_file);
    if(dump_data){
+      std::cout<<"YAYYYYYYYYYYYYYYYY!!! We are dumping the data! YAYYYYYYYYYYYYYYYY!"<<std::endl;
       CTF_int::dump_all_models(data_dir);
    }
 
