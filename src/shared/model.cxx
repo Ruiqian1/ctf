@@ -3,6 +3,7 @@
 #include "../shared/blas_symbs.h"
 #include "model.h"
 #include "../shared/util.h"
+#include <iomanip>
 
 namespace CTF_int {
 
@@ -679,11 +680,22 @@ namespace CTF_int {
   }
 
 
+
+  // Helper function that converts double to string with full percision
+  std::string doubleToText(const double & d)
+  {
+      std::stringstream ss;
+      //ss << std::setprecision( std::numeric_limits<double>::digits10+2);
+      ss << std::setprecision( std::numeric_limits<int>::max() );
+      ss << d;
+      return ss.str();
+  }
+
   template <int nparam>
   void LinModel<nparam>::dump_data(std::string path){
       // Open the file
       std::string model_name = std::string(name);
-      FILE * data_file = fopen((path + model_name).c_str(), "a");
+      FILE * data_file = fopen((path + "/" + model_name).c_str(), "a");
       int data_file_fd = fileno(data_file);
       // std::ofstream ofs;
       // ofs.open(path+"/"+model_name, std::ofstream::out | std::ofstream::app);
@@ -692,7 +704,7 @@ namespace CTF_int {
       std::string coeff = "";
       for(int i=0; i<nparam; i++){
         // ofs<<coeff_guess[i]<<" ";
-        coeff += std::to_string(coeff_guess[i]);
+        coeff += doubleToText(coeff_guess[i]);
         coeff += std::string(" ");
       }
       // Strip off the last space
@@ -708,7 +720,7 @@ namespace CTF_int {
          std::string instance = "";
         for(int j=0; j<mat_lda; j++){
           // ofs<<time_param_mat[i*mat_lda+j]<<" ";
-          instance += std::to_string(time_param_mat[i*mat_lda+j]);
+          instance += doubleToText(time_param_mat[i*mat_lda+j]);
           instance += std::string(" ");
         }
         instance = instance.substr(0, instance.length()-1);
