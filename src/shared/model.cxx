@@ -47,10 +47,10 @@ namespace CTF_int {
 #endif
   }
 
-  void dump_all_models(std::string path){
+  void dump_all_models(std::string path, MPI_Comm cm){
 #ifdef TUNE
     for (int i=0; i<get_all_models().size(); i++){
-      get_all_models()[i]->dump_data(path);
+      get_all_models()[i]->dump_data(path, cm);
     }
 #endif
   }
@@ -679,59 +679,41 @@ namespace CTF_int {
     }
   }
 
-
-
-  // Helper function that converts double to string with full percision
-  std::string doubleToText(const double & d)
-  {
-      std::stringstream ss;
-      // ss << std::setprecision( std::numeric_limits<double>::digits10);
-      ss << std::fixed << std::setprecision(12) << d;
-      // ss << std::setprecision(12);
-      // ss << std::setprecision( std::numeric_limits<int>::max() );
-      std::cout<<ss.str()<<std::endl;
-      return ss.str();
-  }
-
   template <int nparam>
-  void LinModel<nparam>::dump_data(std::string path){
-      // Open the file
-      std::string model_name = std::string(name);
-      FILE * data_file = fopen((path + "/" + model_name).c_str(), "a");
-      int data_file_fd = fileno(data_file);
-      // std::ofstream ofs;
-      // ofs.open(path+"/"+model_name, std::ofstream::out | std::ofstream::app);
+  void LinModel<nparam>::dump_data(std::string path, MPI_Comm cm){
+     int rank = 0;
+     int np, my_rank;
+     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+     MPI_Comm_size(MPI_COMM_WORLD, &np);
+     while(rank < np){
+        if (rank == my_rank){
+         // Open the file
+         std::ofstream ofs;
+         std::string model_name = std::string(name);
+         ofs.open(path+"/"+model_name, std::ofstream::out | std::ofstream::app);
 
-      // Dump the model coeffs
-      std::string coeff = "";
-      for(int i=0; i<nparam; i++){
-        // ofs<<coeff_guess[i]<<" ";
-        coeff += doubleToText(coeff_guess[i]);
-        coeff += std::string(" ");
-      }
-      // Strip off the last space
-      coeff = coeff.substr(0, coeff.size()-1);
-      coeff += std::string("\n");
-      // Write coefficient to the file
-      write(data_file_fd, coeff.c_str(), coeff.size());
-      // ofs<<"\n";
+         if (my_rank == 0){
+            // Dump the model coeffs
+            for(int i=0; i<nparam; i++){
+              ofs<<coeff_guess[i]<<" ";
+            }
+            ofs<<"\n";
+         }
 
-      // Dump the training data
-      int num_records = std::min(nobs, (int64_t)hist_size);
-      for(int i=0; i<num_records; i++){
-         std::string instance = "";
-        for(int j=0; j<mat_lda; j++){
-          // ofs<<time_param_mat[i*mat_lda+j]<<" ";
-          instance += doubleToText(time_param_mat[i*mat_lda+j]);
-          instance += std::string(" ");
-        }
-        instance = instance.substr(0, instance.length()-1);
-        instance += std::string("\n");
-        write(data_file_fd, instance.c_str(), instance.size());
-        // ofs<<"\n";
+         // Dump the training data
+         int num_records = std::min(nobs, (int64_t)hist_size);
+         for(int i=0; i<num_records; i++){
+            std::string instance = "";
+           for(int j=0; j<mat_lda; j++){
+             ofs<<time_param_mat[i*mat_lda+j]<<" ";
+           }
+           ofs<<"\n";
+         }
+         ofs.close();
       }
-      // ofs.close();
-      fclose(data_file);
+      rank++;
+      MPI_Barrier(cm);
+   }
   }
 
 
@@ -838,8 +820,8 @@ namespace CTF_int {
   }
 
   template <int nparam>
-  void CubicModel<nparam>::dump_data(std::string path){
-    lmdl.dump_data(path);
+  void CubicModel<nparam>::dump_data(std::string path, MPI_Comm cm){
+    lmdl.dump_data(path, cm);
   }
 
   template class CubicModel<1>;
