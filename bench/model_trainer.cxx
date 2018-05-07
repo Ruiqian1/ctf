@@ -248,7 +248,10 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
    if(write_coeff)
       CTF_int::write_all_models(coeff_file);
    if(dump_data){
-      std::cout<<"YAYYYYYYYYYYYYYYYY!!! We are dumping the data! YAYYYYYYYYYYYYYYYY!"<<std::endl;
+      int rank, np;
+      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+      MPI_Comm_size(MPI_COMM_WORLD, &np);
+      std::cout<<rank<<"/"<<np<<" "<<"YAYYYYYYYYYYYYYYYY!!! We are dumping the data! YAYYYYYYYYYYYYYYYY!"<<std::endl;
       CTF_int::dump_all_models(data_dir);
    }
 
