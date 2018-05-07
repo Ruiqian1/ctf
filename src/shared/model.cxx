@@ -704,7 +704,7 @@ namespace CTF_int {
       std::string coeff = "";
       for(int i=0; i<nparam; i++){
         // ofs<<coeff_guess[i]<<" ";
-        coeff += doubleToText(coeff_guess[i]);
+        coeff += std::to_string(coeff_guess[i]);
         coeff += std::string(" ");
       }
       // Strip off the last space
@@ -720,7 +720,7 @@ namespace CTF_int {
          std::string instance = "";
         for(int j=0; j<mat_lda; j++){
           // ofs<<time_param_mat[i*mat_lda+j]<<" ";
-          instance += doubleToText(time_param_mat[i*mat_lda+j]);
+          instance += std::to_string(time_param_mat[i*mat_lda+j]);
           instance += std::string(" ");
         }
         instance = instance.substr(0, instance.length()-1);
