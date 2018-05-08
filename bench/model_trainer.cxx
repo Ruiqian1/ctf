@@ -310,7 +310,7 @@ int main(int argc, char ** argv){
   char * data_dir = getenv("MODEL_DATA_DIR");
   std::string data_dir_str;
   if(!data_dir){
-     data_dir_str = std::string("../src/shared/data");
+     data_dir_str = std::string("./src/shared/data");
   }
   else{
      data_dir_str = std::string(data_dir);

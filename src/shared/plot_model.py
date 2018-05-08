@@ -34,6 +34,7 @@ if __name__ == "__main__":
         print("Usage python3 plot_model.py file")
         sys.exit()
     file_name = sys.argv[1]
+    model_name = file_name.split('/')[-1]
     model_coeff, instance = load_data(file_name)
     actual, estimates = get_plot_data(model_coeff, instance)
     plt.figure(figsize=(10,8))
@@ -56,6 +57,7 @@ if __name__ == "__main__":
     plt.subplot(2, 1, 2)
     plt.title("estimated minus actual")
     plt.plot(difference)
-    plt.show()
-    print("Total under time %f"%total_under_time)
-    print("Total over time %f"%total_over_time)
+    # plt.show()
+    plt.savefig("./src/shared/plot/"+model_name+".png")
+    # print("Total under time %f"%total_under_time)
+    # print("Total over time %f"%total_over_time)
