@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 
@@ -59,5 +61,6 @@ if __name__ == "__main__":
     plt.plot(difference)
     # plt.show()
     plt.savefig("./src/shared/plot/"+model_name+".png")
+    # plt.savefig("./plot/"+model_name+".png")
     # print("Total under time %f"%total_under_time)
     # print("Total over time %f"%total_over_time)
