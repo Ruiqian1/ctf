@@ -219,21 +219,27 @@ void frize(std::set<int> & ps, int p){
 }
 
 void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::string coeff_file, std::string data_dir){
-  std::set<int> ps;
-  frize(ps, dw.np);
+  // std::set<int> ps;
+  // frize(ps, dw.np);
+  int np = dw.np;
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  std::set<int>::iterator it;
-  double dtime = time/ps.size();
-  for (it=ps.begin(); it!=ps.end(); it++){
-    int np = *it;
-    int mw = dw.rank/np;
-    int mr = dw.rank%np;
-    int cm;
-    MPI_Comm_split(dw.comm, mw, mr, &cm);
-    World w(cm);
+  // discard the last process
+  if (rank == np - 1) return;
 
-    // Turn off all models
+  // compute membership for each process
+  int num_groups = (int)log2((double)np);
+  int color = (int)log2(rank + 1);
+  int key = rank + 1 - pow(2.0, (double)color);
+  // std::cout<<"rank: "<<rank<<", color: "<<color<<", key: "<<key<<std::endl;
 
+  // split out the communicator
+  int cm;
+  MPI_Comm_split(dw.comm, color, key, &cm);
+  World w(cm);
+
+  double dtime = time/pow(2, color);
     for (int i=0; i<5; i++){
       // TODO probably change it to 1.2 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
@@ -244,7 +250,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
       // TODO what should be the threshold
       // CTF_int::active_switch_all_models(1000, 0.15);
       }
-  }
+
    if(write_coeff)
       CTF_int::write_all_models(coeff_file);
    if(dump_data){
@@ -253,6 +259,39 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
       MPI_Comm_size(MPI_COMM_WORLD, &np);
       CTF_int::dump_all_models(data_dir, MPI_COMM_WORLD);
    }
+
+
+
+  // std::set<int>::iterator it;
+  // double dtime = time/ps.size();
+  // for (it=ps.begin(); it!=ps.end(); it++){
+  //   int np = *it;
+  //   int mw = dw.rank/np;
+  //   int mr = dw.rank%np;
+  //   int cm;
+  //   MPI_Comm_split(dw.comm, mw, mr, &cm);
+  //   World w(cm);
+  //
+  //
+  //   for (int i=0; i<5; i++){
+  //     // TODO probably change it to 1.2 ^ x
+  //     double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
+  //      // std::cout<<"step size: "<<step_size<<std::endl;
+  //     train_world(dtime/5, w, step_size);
+  //     CTF_int::update_all_models(MPI_COMM_WORLD);
+  //
+  //     // TODO what should be the threshold
+  //     // CTF_int::active_switch_all_models(1000, 0.15);
+  //     }
+  // }
+  //  if(write_coeff)
+  //     CTF_int::write_all_models(coeff_file);
+  //  if(dump_data){
+  //     int rank, np;
+  //     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  //     MPI_Comm_size(MPI_COMM_WORLD, &np);
+  //     CTF_int::dump_all_models(data_dir, MPI_COMM_WORLD);
+  //  }
 
 }
 
