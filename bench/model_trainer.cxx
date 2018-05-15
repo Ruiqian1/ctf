@@ -232,7 +232,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
   */
 
   int color = (int)log2(rank + 1);
-  int key = rank + 1 - (int)pow(2.0, (double)color);
+  int key = rank + 1 - (1<<color);
   printf("rank: %d, color: %d, key: %d\n",rank, color,key);
 
   // split out the communicator
@@ -247,7 +247,10 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
       // discard the last process
       if (rank != np - 1 || np == 1)
          train_world(dtime/5, w, step_size);
+
+      printf("rank: %d\n",rank);
       CTF_int::update_all_models(cm);
+      printf("rank: %d\n",rank);
 
       // TODO what should be the threshold
       // CTF_int::active_switch_all_models(1000, 0.15);
