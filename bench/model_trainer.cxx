@@ -219,24 +219,19 @@ void frize(std::set<int> & ps, int p){
 }
 
 void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::string coeff_file, std::string data_dir){
-  // std::set<int> ps;
-  // frize(ps, dw.np);
   int np = dw.np;
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  // discard the last process
-  if (rank == np - 1) return;
-
   // compute membership for each process
-  int num_groups = (int)log2((double)np);
   int color = (int)log2(rank + 1);
   int key = rank + 1 - pow(2.0, (double)color);
   // std::cout<<"rank: "<<rank<<", color: "<<color<<", key: "<<key<<std::endl;
+  printf("rank: %d, color: %d, key: %d\n",rank, color,key);
 
   // split out the communicator
   int cm;
-  MPI_Comm_split(dw.comm, color, key, &cm);
+  MPI_Comm_split(dw.comm, color, rank, &cm);
   World w(cm);
 
   double dtime = time/pow(2, color);
@@ -244,8 +239,12 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
       // TODO probably change it to 1.2 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
        // std::cout<<"step size: "<<step_size<<std::endl;
-      train_world(dtime/5, w, step_size);
-      CTF_int::update_all_models(MPI_COMM_WORLD);
+
+      std::cout<<"The dtime for training is "<<dtime<<std::endl;
+      // discard the last process
+      if (rank != np - 1 || np == 1)
+         train_world(dtime/5, w, step_size);
+      CTF_int::update_all_models(cm);
 
       // TODO what should be the threshold
       // CTF_int::active_switch_all_models(1000, 0.15);
@@ -262,6 +261,8 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
 
 
 
+  //  std::set<int> ps;
+  //  frize(ps, dw.np);
   // std::set<int>::iterator it;
   // double dtime = time/ps.size();
   // for (it=ps.begin(); it!=ps.end(); it++){
