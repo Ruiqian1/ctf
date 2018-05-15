@@ -47,10 +47,10 @@ namespace CTF_int {
 #endif
   }
 
-  void dump_all_models(std::string path, MPI_Comm cm){
+  void dump_all_models(std::string path){
 #ifdef TUNE
     for (int i=0; i<get_all_models().size(); i++){
-      get_all_models()[i]->dump_data(path, cm);
+      get_all_models()[i]->dump_data(path);
     }
 #endif
   }
@@ -520,21 +520,21 @@ namespace CTF_int {
     // get the minimum observations required and threshold
     int min_obs = 1000;
     char * min_obs_env = getenv("MIN_OBS");
-    if(min_obs){
+    if(min_obs_env){
       min_obs = std::stoi(min_obs_env);
     }
 
     // get the threshold for turning off the model
     double threshold = 0.2;
     char * threshold_env = getenv("THRESHOLD");
-    if (threshold){
+    if (threshold_env){
       threshold = std::stod(threshold_env);
    }
 
    // determine whether the model should be turned off
     double under_time_ratio = under_time_total/tot_time_total;
     double over_time_ratio = over_time_total/tot_time_total;
-    if (tot_nrcol >= min_obs && over_time_ratio < 0.2 && threshold < threshold){
+    if (tot_nrcol >= min_obs && over_time_ratio < threshold && threshold < threshold){
       is_active = false;
       std::cout<<"Model "<<name<<" has been turned off"<<std::endl;
    }
@@ -572,6 +572,10 @@ namespace CTF_int {
 
   template <int nparam>
   void LinModel<nparam>::write_coeff(std::string file_name){
+     int my_rank;
+     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+     // Only first process needs to dump the coefficient
+     if (my_rank) return;
 
      // Generate the model name
      std::string model_name = std::string(name);
@@ -692,7 +696,7 @@ namespace CTF_int {
   }
 
   template <int nparam>
-  void LinModel<nparam>::dump_data(std::string path, MPI_Comm cm){
+  void LinModel<nparam>::dump_data(std::string path){
      int rank = 0;
      int np, my_rank;
      MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
@@ -724,7 +728,7 @@ namespace CTF_int {
          ofs.close();
       }
       rank++;
-      MPI_Barrier(cm);
+      MPI_Barrier(MPI_COMM_WORLD);
    }
   }
 
@@ -832,8 +836,8 @@ namespace CTF_int {
   }
 
   template <int nparam>
-  void CubicModel<nparam>::dump_data(std::string path, MPI_Comm cm){
-    lmdl.dump_data(path, cm);
+  void CubicModel<nparam>::dump_data(std::string path){
+    lmdl.dump_data(path);
   }
 
   template class CubicModel<1>;

@@ -223,14 +223,21 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  // compute membership for each process
+  /* compute membership for each process
+  first process belongs to group 0
+  next 2 belong to group 1
+  next 4 belong to group 2
+  next 8 belong to group 3
+  and so on
+  */
+
   int color = (int)log2(rank + 1);
-  int key = rank + 1 - pow(2.0, (double)color);
+  int key = rank + 1 - (int)pow(2.0, (double)color);
   printf("rank: %d, color: %d, key: %d\n",rank, color,key);
 
   // split out the communicator
   int cm;
-  MPI_Comm_split(dw.comm, color, rank, &cm);
+  MPI_Comm_split(dw.comm, color, key, &cm);
   World w(cm);
 
   double dtime = time/pow(2, color);
@@ -252,7 +259,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
       int rank, np;
       MPI_Comm_rank(MPI_COMM_WORLD, &rank);
       MPI_Comm_size(MPI_COMM_WORLD, &np);
-      CTF_int::dump_all_models(data_dir, MPI_COMM_WORLD);
+      CTF_int::dump_all_models(data_dir);
    }
 
 
@@ -340,6 +347,7 @@ int main(int argc, char ** argv){
   bool dump_data = false;
 
   if(std::find(input_str, input_str+in_num, std::string("-write")) != input_str + in_num){
+     std::cout<<"The write flag is turned on"<<std::endl;
      write_coeff = true;
   }
 
