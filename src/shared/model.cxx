@@ -509,20 +509,32 @@ namespace CTF_int {
 
     // check to see if the model should be turned off
 
-    // First aggregrate the
+    // first aggregrate the training records of all models
     double tot_time_total;
     double over_time_total;
     double under_time_total;
     MPI_Allreduce(&tot_time, &tot_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
     MPI_Allreduce(&over_time, &over_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
     MPI_Allreduce(&under_time, &under_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
-    // std::cout<<"total time: "<<tot_time_total<<std::endl;
-    // std::cout<<"over time: "<<over_time_total<<std::endl;
-    // std::cout<<"under time: "<<under_time_total<<std::endl;
 
+    // get the minimum observations required and threshold
+    int min_obs = 1000;
+    char * min_obs_env = getenv("MIN_OBS");
+    if(min_obs){
+      min_obs = std::stoi(min_obs_env);
+    }
+
+    // get the threshold for turning off the model
+    double threshold = 0.2;
+    char * threshold_env = getenv("THRESHOLD");
+    if (threshold){
+      threshold = std::stod(threshold_env);
+   }
+
+   // determine whether the model should be turned off
     double under_time_ratio = under_time_total/tot_time_total;
     double over_time_ratio = over_time_total/tot_time_total;
-    if (tot_nrcol >= 1000 && over_time_ratio < 0.20 && under_time_ratio < 0.20){
+    if (tot_nrcol >= min_obs && over_time_ratio < 0.2 && threshold < threshold){
       is_active = false;
       std::cout<<"Model "<<name<<" has been turned off"<<std::endl;
    }

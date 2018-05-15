@@ -226,7 +226,6 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
   // compute membership for each process
   int color = (int)log2(rank + 1);
   int key = rank + 1 - pow(2.0, (double)color);
-  // std::cout<<"rank: "<<rank<<", color: "<<color<<", key: "<<key<<std::endl;
   printf("rank: %d, color: %d, key: %d\n",rank, color,key);
 
   // split out the communicator
@@ -238,7 +237,6 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
     for (int i=0; i<5; i++){
       // TODO probably change it to 1.2 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
-
       // discard the last process
       if (rank != np - 1 || np == 1)
          train_world(dtime/5, w, step_size);
