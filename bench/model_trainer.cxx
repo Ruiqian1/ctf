@@ -238,9 +238,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
     for (int i=0; i<5; i++){
       // TODO probably change it to 1.2 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
-       // std::cout<<"step size: "<<step_size<<std::endl;
 
-      std::cout<<"The dtime for training is "<<dtime<<std::endl;
       // discard the last process
       if (rank != np - 1 || np == 1)
          train_world(dtime/5, w, step_size);
