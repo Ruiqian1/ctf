@@ -278,6 +278,8 @@ namespace CTF_int {
     MPI_Comm_rank(cm, &rk);
     //if (nobs % tune_interval == 0){
 
+    printf("rank: %d, model: %s, checkpoint 1\n",rk, name);
+
     //define the number of cols in the matrix to be the min of the number of observations and
     //the number we are willing to store (hist_size)
     int nrcol = std::min(nobs,(int64_t)hist_size);
@@ -293,7 +295,9 @@ namespace CTF_int {
 
 
     //if there has been more than 16*nparam observations per processor, tune the model
-    if (tot_nrcol >= 16.*np*nparam || true){
+    if (tot_nrcol >= 16.*np*nparam){
+
+      printf("rank: %d, model: %s, checkpoint 2\n",rk, name);
       is_tuned = true;
 
       //add nparam to ncol to include regularization, don't do so if the number of local
@@ -312,15 +316,17 @@ namespace CTF_int {
           lda_cpy(sizeof(double), 1, nparam, 1, nparam, (char const*)regularization, (char*)R);
         }*/
       } else {
+
+         printf("rank: %d, model: %s, checkpoint 3\n",rk, name);
         //define tall-skinny matrix A that is almost the transpose of time_param, but excludes the first row of time_param (that has execution times that we will put into b
         double * A = (double*)alloc(sizeof(double)*nparam*ncol);
         int i_st = 0;
 
         //figure out the maximum execution time any observation recorded
-        double max_time = 0.0;
-        for (int i=0; i<ncol-nparam; i++){
-          max_time = std::max(time_param_mat[i*mat_lda],max_time);
-        }
+        // double max_time = 0.0;
+        // for (int i=0; i<ncol-nparam; i++){
+        //   max_time = std::max(time_param_mat[i*mat_lda],max_time);
+        // }
         /*for (int i=0; i<nparam; i++){
           R[nparam*i+i] = REG_LAMBDA;
         }*/
@@ -345,7 +351,7 @@ namespace CTF_int {
           i_st = nparam;
         }
         //find the max execution time over all processors
-        MPI_Allreduce(MPI_IN_PLACE, &max_time, 1, MPI_DOUBLE, MPI_MAX, cm);
+        // MPI_Allreduce(MPI_IN_PLACE, &max_time, 1, MPI_DOUBLE, MPI_MAX, cm);
         //double chunk = max_time / 1000.;
         //printf("%s chunk = %+1.2e\n",name,chunk);
 
@@ -434,7 +440,7 @@ namespace CTF_int {
         cdealloc(tau);
         cdealloc(A);
       }
-      int sub_np = std::min(np,32);
+      int sub_np = np; //std::min(np,32);
       MPI_Comm sub_comm;
       MPI_Comm_split(cm, rk<sub_np, rk, &sub_comm);
       //use only data from the first 32 processors, so that this doesn't take too long
@@ -511,7 +517,7 @@ namespace CTF_int {
 
     // first aggregrate the training records of all models
 
-    printf("rank: %d checkpoint 1\n",rk);
+    printf("rank: %d, model: %s, checkpoint 4\n",rk, name);
     double tot_time_total;
     double over_time_total;
     double under_time_total;
@@ -536,6 +542,9 @@ namespace CTF_int {
    // determine whether the model should be turned off
     double under_time_ratio = under_time_total/tot_time_total;
     double over_time_ratio = over_time_total/tot_time_total;
+
+    printf("rank: %d, model: %s, checkpoint 5\n",rk, name);
+
     if (tot_nrcol >= min_obs && over_time_ratio < threshold && threshold < threshold){
       is_active = false;
       std::cout<<"Model "<<name<<" has been turned off"<<std::endl;

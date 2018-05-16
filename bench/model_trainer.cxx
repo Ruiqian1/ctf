@@ -218,7 +218,8 @@ void frize(std::set<int> & ps, int p){
   }
 }
 
-void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::string coeff_file, std::string data_dir){
+void train_all(double time, bool write_coeff, bool dump_data, std::string coeff_file, std::string data_dir){
+  World dw(MPI_COMM_WORLD);
   int np = dw.np;
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -241,20 +242,40 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
   World w(cm);
 
   // double dtime = time/pow(2, color);
-  double dtime = time;
+   double dtime = time;
     for (int i=0; i<5; i++){
-      // TODO probably change it to 1.2 ^ x
+      // TODO probably change it to 1.5 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
       // discard the last process
-      // if (rank != np - 1 || np == 1)
+      if (rank != np - 1 || np == 1){
          train_world(dtime/5, w, step_size);
+         CTF_int::update_all_models(cm);
       }
-      printf("rank: %d before\n",rank);
+
+      if (rank != np - 1 || np == 1)
+         train_world(dtime/5, w, step_size);
       CTF_int::update_all_models(MPI_COMM_WORLD);
-      printf("rank: %d after\n",rank);
+      if (rank != np - 1 || np == 1){
+         train_world(dtime/5, w, step_size);
+         CTF_int::update_all_models(cm);
+      }
+
+      if (rank != np - 1 || np == 1)
+         train_world(dtime/5, w, step_size);
+      CTF_int::update_all_models(MPI_COMM_WORLD);
+      train_world(dtime/5, dw, step_size);
+      CTF_int::update_all_models(MPI_COMM_WORLD);
+      // printf("rank: %d before\n",rank);
+      // CTF_int::update_all_models(MPI_COMM_WORLD);
+      // printf("rank: %d after\n",rank);
 
       // TODO what should the threshold be
       // CTF_int::active_switch_all_models(1000, 0.15);
+   }
+
+
+
+
 
 
    if(write_coeff)
@@ -374,7 +395,7 @@ int main(int argc, char ** argv){
     if (rank == 0){
       printf("Executing a wide set of contractions to train model with time budget of %lf sec\n", time);
     }
-    train_all(time, dw, write_coeff, dump_data, coeff_file, data_dir_str);
+    train_all(time, write_coeff, dump_data, coeff_file, data_dir_str);
   }
 
 
