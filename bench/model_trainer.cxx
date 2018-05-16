@@ -245,7 +245,7 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
       // TODO probably change it to 1.2 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
       // discard the last process
-      if (rank != np - 1 || np == 1)
+      // if (rank != np - 1 || np == 1)
          train_world(dtime/5, w, step_size);
       }
       printf("rank: %d before\n",rank);
