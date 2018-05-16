@@ -248,11 +248,11 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
       if (rank != np - 1 || np == 1)
          train_world(dtime/5, w, step_size);
       }
-      printf("before rank: %d\n",rank);
+      printf("rank: %d before\n",rank);
       CTF_int::update_all_models(MPI_COMM_WORLD);
-      printf("after rank: %d\n",rank);
+      printf("rank: %d after\n",rank);
 
-      // TODO what should be the threshold
+      // TODO what should the threshold be
       // CTF_int::active_switch_all_models(1000, 0.15);
 
 

@@ -293,7 +293,7 @@ namespace CTF_int {
 
 
     //if there has been more than 16*nparam observations per processor, tune the model
-    if (tot_nrcol >= 16.*np*nparam){
+    if (tot_nrcol >= 16.*np*nparam || true){
       is_tuned = true;
 
       //add nparam to ncol to include regularization, don't do so if the number of local
@@ -510,6 +510,8 @@ namespace CTF_int {
     // check to see if the model should be turned off
 
     // first aggregrate the training records of all models
+
+    printf("rank: %d checkpoint 1\n",rk);
     double tot_time_total;
     double over_time_total;
     double under_time_total;
