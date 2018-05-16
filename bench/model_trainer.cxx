@@ -240,7 +240,8 @@ void train_all(double time, World & dw, bool write_coeff, bool dump_data, std::s
   MPI_Comm_split(dw.comm, color, key, &cm);
   World w(cm);
 
-  double dtime = time/pow(2, color);
+  // double dtime = time/pow(2, color);
+  double dtime = time;
     for (int i=0; i<5; i++){
       // TODO probably change it to 1.2 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
