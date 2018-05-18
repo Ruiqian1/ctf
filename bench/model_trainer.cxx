@@ -239,10 +239,16 @@ void train_all(double time, bool write_coeff, bool dump_data, std::string coeff_
   MPI_Comm_split(dw.comm, color, key, &cm);
   World w(cm);
 
-  // t0 = time / 2^6
-   double dtime = time / (1<<5);
-    for (int i=0; i<5; i++){
-      // TODO probably change it to 1.5 ^ x
+   // number of iterations for training
+   int num_iterations = 5;
+
+   // control how much dtime should be increased upon each iteration
+   // dtime = dtime * time_dump at the end of each iteration
+   double time_jump = 1.5;
+
+   double dtime = (time / (1- 1/time_jump)) / pow(time_jump, num_iterations - 1.0);
+    for (int i=0; i<num_iterations; i++){
+      // TODO probably need to adjust
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
       // discard the last process
       if (rank != np - 1 || np == 1){
@@ -265,7 +271,7 @@ void train_all(double time, bool write_coeff, bool dump_data, std::string coeff_
       CTF_int::update_all_models(MPI_COMM_WORLD);
 
       // double dtime for next iteration
-      dtime *= 2;
+      dtime *= time_jump;
    }
 
 
