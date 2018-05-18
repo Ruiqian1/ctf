@@ -234,15 +234,15 @@ void train_all(double time, bool write_coeff, bool dump_data, std::string coeff_
 
   int color = (int)log2(rank + 1);
   int key = rank + 1 - (1<<color);
-  printf("rank: %d, color: %d, key: %d\n",rank, color,key);
+  // printf("rank: %d, color: %d, key: %d\n",rank, color,key);
 
   // split out the communicator
   int cm;
   MPI_Comm_split(dw.comm, color, key, &cm);
   World w(cm);
 
-  // double dtime = time/pow(2, color);
-   double dtime = time;
+  // t0 = time / 2^6
+   double dtime = time / (1<<6);
     for (int i=0; i<5; i++){
       // TODO probably change it to 1.5 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
@@ -265,17 +265,10 @@ void train_all(double time, bool write_coeff, bool dump_data, std::string coeff_
       CTF_int::update_all_models(MPI_COMM_WORLD);
       train_world(dtime/5, dw, step_size);
       CTF_int::update_all_models(MPI_COMM_WORLD);
-      // printf("rank: %d before\n",rank);
-      // CTF_int::update_all_models(MPI_COMM_WORLD);
-      // printf("rank: %d after\n",rank);
 
-      // TODO what should the threshold be
-      // CTF_int::active_switch_all_models(1000, 0.15);
+      // double dtime for next iteration
+      dtime *= 2;
    }
-
-
-
-
 
 
    if(write_coeff)
