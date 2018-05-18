@@ -240,7 +240,7 @@ void train_all(double time, bool write_coeff, bool dump_data, std::string coeff_
   World w(cm);
 
   // t0 = time / 2^6
-   double dtime = time / (1<<6);
+   double dtime = time / (1<<5);
     for (int i=0; i<5; i++){
       // TODO probably change it to 1.5 ^ x
       double step_size = 1.0 + 1.5 / pow(2.0, (double)i);
