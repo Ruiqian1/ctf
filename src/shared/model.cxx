@@ -278,8 +278,6 @@ namespace CTF_int {
     MPI_Comm_rank(cm, &rk);
     //if (nobs % tune_interval == 0){
 
-    printf("rank: %d, model: %s, checkpoint 1\n",rk, name);
-
     //define the number of cols in the matrix to be the min of the number of observations and
     //the number we are willing to store (hist_size)
     int nrcol = std::min(nobs,(int64_t)hist_size);
@@ -296,8 +294,6 @@ namespace CTF_int {
 
     //if there has been more than 16*nparam observations per processor, tune the model
     if (tot_nrcol >= 16.*np*nparam){
-
-      printf("rank: %d, model: %s, checkpoint 2\n",rk, name);
       is_tuned = true;
 
       //add nparam to ncol to include regularization, don't do so if the number of local
@@ -316,8 +312,6 @@ namespace CTF_int {
           lda_cpy(sizeof(double), 1, nparam, 1, nparam, (char const*)regularization, (char*)R);
         }*/
       } else {
-
-         printf("rank: %d, model: %s, checkpoint 3\n",rk, name);
         //define tall-skinny matrix A that is almost the transpose of time_param, but excludes the first row of time_param (that has execution times that we will put into b
         double * A = (double*)alloc(sizeof(double)*nparam*ncol);
         int i_st = 0;
@@ -516,14 +510,16 @@ namespace CTF_int {
     // check to see if the model should be turned off
 
     // first aggregrate the training records of all models
-
-    printf("rank: %d, model: %s, checkpoint 4\n",rk, name);
     double tot_time_total;
     double over_time_total;
     double under_time_total;
     MPI_Allreduce(&tot_time, &tot_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
     MPI_Allreduce(&over_time, &over_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
     MPI_Allreduce(&under_time, &under_time_total, 1, MPI_DOUBLE, MPI_SUM, cm);
+
+
+    // NOTE: to change the minimum number of observations and the threshold,
+    // one needs to change the environment variable MIN_OBS and THRESHOLD before running model_trainer
 
     // get the minimum observations required and threshold
     int min_obs = 1000;
@@ -543,7 +539,6 @@ namespace CTF_int {
     double under_time_ratio = under_time_total/tot_time_total;
     double over_time_ratio = over_time_total/tot_time_total;
 
-    printf("rank: %d, model: %s, checkpoint 5\n",rk, name);
 
     if (tot_nrcol >= min_obs && over_time_ratio < threshold && threshold < threshold){
       is_active = false;

@@ -171,7 +171,6 @@ void train_world(double dtime, World & dw, double step_size){
   // ddtime = dime / (10*log(dtime)), which is a function that increase really slow
   int rnk;
   MPI_Comm_rank(MPI_COMM_WORLD, &rnk);
-//  printf("ddtime = %lf\n", ddtime);
   for (;;){
     double t_st = MPI_Wtime();
     int niter = 0;
@@ -234,7 +233,6 @@ void train_all(double time, bool write_coeff, bool dump_data, std::string coeff_
 
   int color = (int)log2(rank + 1);
   int key = rank + 1 - (1<<color);
-  // printf("rank: %d, color: %d, key: %d\n",rank, color,key);
 
   // split out the communicator
   int cm;
